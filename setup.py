@@ -3,15 +3,12 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open("requirements.txt", "r", encoding="utf-8") as fh:
-    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
-
 setup(
     name="netforensic-toolkit",
     version="1.0.0",
-    author="NetForensic Team",
-    author_email="security@example.com",
-    description="Professional network forensic analysis toolkit",
+    author="Syed Rai",
+    author_email="your-email@example.com",
+    description="Professional network forensic analysis toolkit with cartoonish interface",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
@@ -25,7 +22,14 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     python_requires=">=3.10",
-    install_requires=requirements,
+    install_requires=[
+        "scapy>=2.4.5",
+        "dpkt>=1.9.8", 
+        "pandas>=1.5.0",
+        "matplotlib>=3.6.0",
+        "argcomplete>=2.0.0",
+        "colorama>=0.4.6",
+    ],
     entry_points={
         "console_scripts": [
             "netforensic=netforensic.cli:main",
