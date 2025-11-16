@@ -1,0 +1,13 @@
+# NetForensicToolkit - Indicators of Compromise
+# Suspicious IP addresses for real-time detection
+
+# Known malicious IPs (example)
+93.184.216.34
+8.8.8.8  # Example: This would normally be a malicious IP
+
+# C2 servers
+192.168.1.100
+10.0.0.50
+
+# Scanning IPs
+203.0.113.15
