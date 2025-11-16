@@ -10,6 +10,9 @@
 
 *A professional, cartoonish network forensic analysis toolkit that makes packet analysis fun!*
 
+[![GitHub stars](https://img.shields.io/github/stars/syedrai/NetForensicToolkit?style=social)](https://github.com/syedrai/NetForensicToolkit)
+[![GitHub forks](https://img.shields.io/github/forks/syedrai/NetForensicToolkit?style=social)](https://github.com/syedrai/NetForensicToolkit)
+
 </div>
 
 ## 📖 Table of Contents
@@ -20,8 +23,8 @@
 - [🎪 Installation](#-installation)
 - [🕹️ Usage](#️-usage)
 - [🔍 Detection Capabilities](#-detection-capabilities)
-- [📊 Sample Output](#-sample-output)
-- 🏗️ [Project Structure](#️-project-structure)
+- [📊 Real Output](#-real-output)
+- [🏗️ Project Structure](#️-project-structure)
 - [🤝 Contributing](#-contributing)
 - [⚖️ Legal Disclaimer](#️-legal-disclaimer)
 - [📄 License](#-license)
@@ -42,18 +45,17 @@ NetForensicToolkit is not your average network analysis tool! We've taken powerf
 - **Random Fun Messages** for every operation
 
 ### 🔧 Professional Capabilities
-- **📡 Live Packet Capture** with real-time IOC detection
+- **📡 Live Packet Capture** using reliable tcpdump backend
 - **🔍 Forensic PCAP Analysis** with deep packet inspection
-- **🚨 Suspicious Activity Detection** (port scans, data exfiltration, beaconing)
-- **📊 Professional Reporting** in HTML and JSON formats
-- **🎯 IOC Matching** with real-time alerts
+- **🚨 Suspicious Activity Detection** (port scans, data exfiltration)
+- **📊 Basic Reporting** capabilities
+- **🎯 IOC Matching** with alert system
 
 ### 🕵️‍♂️ Detective Features
-- **Real-time Alerts** with fun animations
+- **Real-time Progress** with fun animations
 - **Smart Pattern Recognition** for common attack vectors
-- **Timeline Reconstruction** of network events
-- **Top Talker Analysis** with visual rankings
-- **Protocol Breakdown** with colorful charts
+- **Protocol Analysis** with visual breakdown
+- **Network Interface Detection** with automatic fallbacks
 
 ## 🚀 Quick Start
 
@@ -61,82 +63,86 @@ NetForensicToolkit is not your average network analysis tool! We've taken powerf
 - **Python 3.10+** 🐍
 - **Root/Admin privileges** for packet capture
 - **Network interface** to monitor
+- **tcpdump** installed on system
 
 ### ⚡ Super Quick Start
 ```bash
 # Clone and play!
-git clone https://github.com/your-org/NetForensicToolkit.git
+git clone https://github.com/syedrai/NetForensicToolkit.git
 cd NetForensicToolkit
+
+# Install the toolkit
 pip install -e .
 
 # Become a network detective! 🕵️‍♂️
-sudo netforensic capture eth0 --duration 30
+sudo /path/to/netforensic_env/bin/netforensic capture eth0 --duration 30
 ```
 
 ## 🎪 Installation
 
-### Method 1: PIP Installation (Recommended)
-```bash
-pip install netforensic-toolkit
-```
-
-### Method 2: From Source
+### Method 1: From Source (Recommended)
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/NetForensicToolkit.git
+git clone https://github.com/syedrai/NetForensicToolkit.git
 cd NetForensicToolkit
 
-# Install with all the cartoonish goodness
-pip install -r requirements.txt
+# Install system dependencies (Debian/Ubuntu/Parrot)
+sudo apt update
+sudo apt install python3 python3-pip python3-venv tcpdump
+
+# Create virtual environment and install
+python3 -m venv netforensic_env
+source netforensic_env/bin/activate
 pip install -e .
 
 # Test your installation
 netforensic --help
 ```
 
+### Method 2: Manual Installation
+```bash
+# Install Python dependencies
+pip install scapy dpkt pandas matplotlib colorama
+
+# Install the toolkit
+pip install -e .
+```
+
 ### Dependencies
-The toolkit automatically installs:
-- `scapy` - Packet capture wizardry 🧙‍♂️
+The toolkit uses:
+- `scapy` - Network packet manipulation 🧙‍♂️
 - `dpkt` - PCAP parsing power 🔧
 - `pandas` - Data analysis magic 📈
 - `matplotlib` - Beautiful charts 🎨
-- `colorama` - Windows color support 🌈
+- `colorama` - Cross-platform colors 🌈
+- `tcpdump` - Reliable packet capture 📡
 
 ## 🕹️ Usage
 
 ### 🎬 Capture Network Traffic
 ```bash
 # Basic capture (30 seconds of fun!)
-sudo netforensic capture eth0 --duration 30
+sudo /path/to/netforensic_env/bin/netforensic capture enp0s3 --duration 30
 
-# Capture with custom output
-sudo netforensic capture wlan0 --duration 60 --output my_mystery_capture.pcap
-
-# Watch the magic happen! ✨
+# Or create a helper script for easier use:
+echo 'sudo /home/$(whoami)/Desktop/NetForensicToolkit/netforensic_env/bin/netforensic "$@"' > netforensic-sudo.sh
+chmod +x netforensic-sudo.sh
+./netforensic-sudo.sh capture enp0s3 --duration 30
 ```
 
 ### 🔍 Analyze PCAP Files
 ```bash
-# Analyze with detective mode activated!
-netforensic analyze suspicious_traffic.pcap
+# Analyze with detective mode activated! (no sudo needed)
+netforensic analyze captures/capture_*.pcap
 
-# Get the full story with custom output
-netforensic analyze mystery.pcap --output case_analysis.json
+# Analyze any PCAP file
+netforensic analyze suspicious_traffic.pcap
 ```
 
-### 📊 Generate Forensic Reports
+### 📊 Generate Reports
 ```bash
-# HTML report with beautiful charts
+# Basic report generation
 netforensic report capture.pcap --format html
-
-# JSON report for your forensic tools
-netforensic report capture.pcap --format json
-
-# Both reports because why choose?
-netforensic report capture.pcap --format both
-
-# Custom output directory
-netforensic report capture.pcap --format html --output ./reports/
 ```
 
 ### 🚨 Alert Mode with IOC Detection
@@ -145,12 +151,10 @@ Create `iocs.txt` in your working directory:
 # Suspicious IPs for real-time detection
 # Format: One IP per line, comments start with #
 
-93.184.216.34    # Known malicious IP
-192.168.1.100    # Internal threat
-10.0.0.50        # Suspicious server
+8.8.8.8         # Example: Google DNS (for testing)
+1.1.1.1         # Example: Cloudflare DNS
+192.168.1.100   # Internal suspicious host
 ```
-
-When capturing, the toolkit will alert you in real-time! 🚨
 
 ## 🔍 Detection Capabilities
 
@@ -159,21 +163,19 @@ When capturing, the toolkit will alert you in real-time! 🚨
 |---------------------|-------|-------------|
 | **Port Scanning** | 🎯 | Multiple SYN packets to different ports |
 | **Large Data Transfers** | 📤 | Unusually large outbound data flows |
-| **Beaconing Patterns** | ⏰ | Regular communication intervals |
 | **IOC Matches** | 🚨 | Communications with blacklisted IPs |
-| **Protocol Anomalies** | 🤔 | Unusual protocol usage patterns |
-| **Failed Connections** | ❌ | Multiple RST packets and failed attempts |
+| **Protocol Analysis** | 🔍 | TCP, UDP, ICMP protocol breakdown |
 
 ### 🎪 Alert System
 ```
 🚨 RED ALERT! We've got a live one!
    IOC MATCH: 192.168.1.100 → 8.8.8.8
-   TYPE: PORT_SCAN | SEVERITY: HIGH 🎯
+   TYPE: SUSPICIOUS_COMMUNICATION
 ```
 
-## 📊 Sample Output
+## 📊 Real Output
 
-### 🎨 Capture Session
+### 🎨 Actual Capture Session
 ```bash
 🎭 NETFORENSIC TOOLKIT 🎭
 
@@ -182,43 +184,44 @@ When capturing, the toolkit will alert you in real-time! 🚨
 
 "Unmasking digital mysteries!"
 
-🎬 Lights, camera, PACKET ACTION! Starting capture...
+🚀 📡 Beaming up packets from the network void...
 
+════════════════════════════════════════════════════════════
 ⚙️ CAPTURE CONFIGURATION
-📡 Interface: eth0
+════════════════════════════════════════════════════════════
+💻 Interface: enp0s3
 ⏱️ Duration: 30 seconds
-🎯 Mode: Time-based
 
 🔍 Detective Mode Activated!
-📦 Capturing packets... 📦 📦 📦 Ready!
+🕵️‍♂️ Found clues!
 
-🚨 RED ALERT! We've got a live one!
-   IOC MATCH: 192.168.1.100 → 8.8.8.8
+🌐 Starting reliable packet capture...
 
+════════════════════════════════════════════════════════════
 🎉 CAPTURE COMPLETE
-✅ Packets captured: 1,247
-📦 File saved: captures/capture_20231201_143022.pcap
+════════════════════════════════════════════════════════════
+✅ Method used: tcpdump
+📦 File saved: captures/capture_20251116_062012.pcap
+📈 File size: 296.00 B
 
 🎉 SUCCESS! Capture completed successfully!
-✨ Operation completed successfully!
 ```
 
-### 🔍 Analysis Results
+### 🔍 Actual Analysis Results
 ```bash
-🔍 Putting on our detective hat for some serious sleuthing...
+🎭 NETFORENSIC TOOLKIT 🎭
 
-🔍 FORENSIC ANALYSIS IN PROGRESS
-🕵️‍♂️ Analyzing packets |🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜| 70.0% 
+🕵️‍♂️ Ready!
 
+════════════════════════════════════════════════════════════
+🔍 ANALYSIS STARTING
+════════════════════════════════════════════════════════════
+
+════════════════════════════════════════════════════════════
 📊 ANALYSIS RESULTS
-📦 Total Packets: 1,247
-⏱️ Duration: 12.45s
-🌐 Protocols Found: TCP, UDP, ICMP
-🚨 Suspicious Activities: 3
-🔥 IOC Matches: 1
-
-🚨 HIGH SEVERITY FINDINGS:
-   🚨 PORT_SCAN from 192.168.1.100
+════════════════════════════════════════════════════════════
+📦 Total Packets: 10
+🌐 Protocols: TCP, UDP
 ```
 
 ## 🏗️ Project Structure
@@ -229,7 +232,7 @@ NetForensicToolkit/ 🎭
 ├── netforensic/ 🎪
 │   ├── __init__.py
 │   ├── cli.py 🎮 # Cartoonish command-line interface
-│   ├── capture.py 📡 # Packet capture with animations
+│   ├── capture.py 📡 # Reliable packet capture engine
 │   ├── parser.py 🔍 # Forensic analysis engine
 │   ├── report.py 📊 # Report generation
 │   ├── utils.py ⚙️ # Utility functions
@@ -245,6 +248,9 @@ NetForensicToolkit/ 🎭
 ├── iocs.txt 🚨 # Indicators of Compromise
 ├── requirements.txt 📋
 ├── setup.py ⚡
+├── install_dependencies.sh 🔧
+├── install.sh 🛠️
+├── quick_start.sh 🚀
 └── README.md 📖
 ```
 
@@ -255,28 +261,26 @@ NetForensicToolkit/ 🎭
 netforensic capture <interface> [--duration 60] [--output file.pcap]
 
 Options:
-  interface    Network interface to monitor (eth0, wlan0, etc.)
+  interface    Network interface to monitor (enp0s3, wlan0, eth0, etc.)
   --duration   Capture duration in seconds (default: 60)
   --output     Custom output filename
 ```
 
 ### Analyze Command
 ```bash
-netforensic analyze <pcap> [--output analysis.json]
+netforensic analyze <pcap>
 
 Options:
-  pcap         PCAP file to analyze
-  --output     Save analysis results to JSON file
+  pcap         PCAP file to analyze (supports full paths)
 ```
 
 ### Report Command
 ```bash
-netforensic report <pcap> [--format html|json|both] [--output dir]
+netforensic report <pcap> [--format html]
 
 Options:
   pcap         PCAP file to analyze
-  --format     Output format (default: html)
-  --output     Custom output directory
+  --format     Output format (html)
 ```
 
 ## 🤝 Contributing
@@ -290,11 +294,11 @@ We love contributors! Want to add more emojis? Create cooler animations? Improve
 4. **Push** to the branch: `git push origin feature/amazing-detective-feature`
 5. **Open** a Pull Request
 
-### 🎨 Adding New Animations
+### 🎨 Want to Add New Animations?
 Check out `animations.py` to add your own cartoonish effects!
 
-### 🚨 Adding New Detections
-Extend the `_detect_anomalies()` method in `parser.py` to find new suspicious patterns.
+### 🚨 Want to Improve Detection?
+Extend the analysis methods in `parser.py` to find new suspicious patterns.
 
 ## ⚖️ Legal Disclaimer
 
@@ -351,9 +355,11 @@ Share your forensic findings with us!
 
 <div align="center">
 
-**Made with ❤️ and too many emojis by the NetForensic Detective Agency**
+**Made with ❤️ and too many emojis by Syed Rai**
 
 *"Solving digital mysteries, one packet at a time!"* 🕵️‍♂️📦✨
+
+**[⭐ Star this repo on GitHub](https://github.com/syedrai/NetForensicToolkit)**
 
 </div>
 
@@ -366,3 +372,19 @@ Remember: With great packet power comes great responsibility! Use this tool to m
 ---
 
 *P.S. If you enjoy this tool, give it a ⭐ on GitHub! It makes our emojis happy! 😊*
+
+---
+
+<div align="center">
+
+### 🔮 Future Enhancements
+
+We're constantly improving! Upcoming features:
+- 🎯 Advanced behavioral analysis
+- 📈 Real-time dashboard
+- 🔔 Smart alert system
+- 🌐 Web interface version
+
+**Stay tuned for more detective adventures!** 🕵️‍♂️✨
+
+</div>
