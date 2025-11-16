@@ -24,10 +24,9 @@ setup(
     python_requires=">=3.10",
     install_requires=[
         "scapy>=2.4.5",
-        "dpkt>=1.9.8", 
+        "dpkt>=1.9.8",
         "pandas>=1.5.0",
         "matplotlib>=3.6.0",
-        "argcomplete>=2.0.0",
         "colorama>=0.4.6",
     ],
     entry_points={
