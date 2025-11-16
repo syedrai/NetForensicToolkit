@@ -1,14 +1,16 @@
 """Live packet capture module for NetForensicToolkit with cartoon style."""
 
 import time
-from scapy.all import sniff, IP, TCP, UDP, ICMP
+from scapy.all import sniff, IP, TCP, UDP, ICMP, conf
 from scapy.utils import wrpcap
 from pathlib import Path
 from typing import Optional, List, Callable
 import threading
 from datetime import datetime
+import subprocess
+import os
 
-from .utils import load_iocs, setup_logging, print_section_header, celebrate_success
+from .utils import load_iocs, setup_logging, print_section_header, celebrate_success, show_error
 from .animations import CartoonAnimations, CartoonColors, FunMessages
 
 logger = setup_logging()
@@ -55,9 +57,6 @@ class PacketCapture:
                 'protocol': self._get_protocol(packet),
                 'alert': alert_msg
             })
-            
-        # Detect suspicious patterns
-        self._detect_suspicious_patterns(packet)
     
     def _get_protocol(self, packet) -> str:
         """Extract protocol from packet."""
@@ -69,29 +68,6 @@ class PacketCapture:
             return "ICMP"
         else:
             return "OTHER"
-    
-    def _detect_suspicious_patterns(self, packet) -> None:
-        """Detect various suspicious network patterns."""
-        if packet.haslayer(TCP):
-            tcp_layer = packet[TCP]
-            
-            # SYN flood detection
-            if tcp_layer.flags == 'S':  # SYN packet
-                self._check_syn_scan(packet)
-            
-            # Failed connection attempts (RST packets)
-            if tcp_layer.flags == 'R':
-                self._check_failed_connections(packet)
-    
-    def _check_syn_scan(self, packet) -> None:
-        """Detect SYN scan patterns."""
-        # Implementation would track SYN packet frequency
-        pass
-    
-    def _check_failed_connections(self, packet) -> None:
-        """Detect failed connection attempts."""
-        # Implementation would track RST packets
-        pass
     
     def capture(self, interface: str, duration: int = 60, 
                 packet_count: int = 0, output_file: Optional[str] = None) -> str:
@@ -131,7 +107,12 @@ class PacketCapture:
             print(f"\n{CartoonColors.ICONS['network']} Starting packet capture...")
             CartoonAnimations.packet_capture_animation()
             
-            # Start capture with Scapy
+            # Configure Scapy for better performance
+            conf.verb = 0  # Reduce verbosity
+            
+            # Start capture with Scapy - robust error handling
+            print(f"\r{CartoonColors.ICONS['search']} Initializing capture on {interface}...", end="", flush=True)
+            
             packets = sniff(
                 iface=interface,
                 timeout=duration,
@@ -156,11 +137,42 @@ class PacketCapture:
             return str(output_file)
             
         except Exception as e:
-            from .utils import show_error
-            show_error(f"Capture failed: {e}")
-            raise
+            show_error(f"Capture failed: {str(e)}")
+            # Fallback to tcpdump
+            return self._fallback_capture(interface, duration, output_file)
         finally:
             self.is_capturing = False
+
+    def _fallback_capture(self, interface: str, duration: int, output_file: str) -> str:
+        """Fallback to tcpdump if Scapy fails."""
+        print(f"\n{CartoonColors.ICONS['warning']} Falling back to tcpdump...")
+        
+        try:
+            # Use tcpdump for reliable capture
+            cmd = [
+                'tcpdump', '-i', interface,
+                '-w', output_file,
+                '-c', '1000',  # Limit packets
+                '-s', '0',     # Full packet capture
+                '-n'           # No name resolution
+            ]
+            
+            # Start tcpdump with timeout
+            process = subprocess.Popen(cmd)
+            time.sleep(duration)
+            process.terminate()
+            process.wait()
+            
+            # Verify capture worked
+            if Path(output_file).exists() and Path(output_file).stat().st_size > 0:
+                print(f"{CartoonColors.ICONS['success']} Fallback capture successful!")
+                return output_file
+            else:
+                raise Exception("Fallback capture failed")
+                
+        except Exception as e:
+            show_error(f"Fallback capture also failed: {str(e)}")
+            raise
 
 def start_capture(interface: str, duration: int = 60, alert_mode: bool = True) -> str:
     """Convenience function to start packet capture."""
